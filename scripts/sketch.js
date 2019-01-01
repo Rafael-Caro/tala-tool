@@ -133,6 +133,7 @@ function start() {
     strokeCircles[i] = strokeCircle;
   }
   slider.value(tempoInit);
+  updateTempo();
 }
 
 function StrokeCircle (matra, vibhag, circleType, bol) {
@@ -176,6 +177,10 @@ function StrokeCircle (matra, vibhag, circleType, bol) {
     textStyle(BOLD);
     text(this.bol, this.x, this.y);
   }
+}
+
+function CreateCursor () {
+
 }
 
 function updateCursor (position) {
