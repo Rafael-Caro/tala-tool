@@ -19,8 +19,9 @@ var tempo;
 // var cursorY; //cursor line's y
 // var angle = -90; //angle of the cursor
 var cursor;
-var alpha;
-var position = 0;
+var shade;
+// var alpha;
+// var position = 0;
 //html interaction
 var slider;
 var select;
@@ -71,6 +72,9 @@ function draw() {
   // mainColor.setAlpha(alpha);
   // fill(mainColor);
   // arc(0, 0, radiusBig, radiusBig, -90, angle%360);
+
+  shade.update();
+  shade.display();
 
   noFill();
   strokeWeight(2);
@@ -138,6 +142,7 @@ function start() {
   slider.value(tempoInit);
   updateTempo();
   cursor = new CreateCursor();
+  shade = new CreateShade();
 }
 
 function StrokeCircle (matra, vibhag, circleType, bol) {
@@ -203,6 +208,37 @@ function CreateCursor () {
     fill("red");
     noStroke();
     ellipse(this.x, this.y, 5, 5)
+  }
+}
+
+function CreateShade () {
+  this.x = 0;
+  this.y = -radiusBig;
+  this.angle = 270;
+  this.position = 0;
+  this.alpha = 0;
+  this.color = mainColor;
+  this.update = function () {
+    var position = millis();
+    var increase = position - this.position;
+    this.angle += (360 * increase) / speed;
+    if (this.angle > 360) {
+      this.angle -= 360;
+    }
+    var alphaAngle = this.angle + 90;
+    if (alphaAngle > 360) {
+      alphaAngle -= 360;
+    }
+    this.alpha = map(alphaAngle, 0, 360, 0, 255);
+    this.x = radiusBig * cos(this.angle);
+    this.y = radiusBig * sin(this.angle);
+    this.position = position;
+  }
+  this.display = function () {
+    this.color.setAlpha(this.alpha);
+    fill(this.color);
+    noStroke();
+    arc(0, 0, radiusBig, radiusBig, 270, this.angle);
   }
 }
 
