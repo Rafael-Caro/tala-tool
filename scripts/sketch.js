@@ -15,9 +15,10 @@ var matraColor;
 //machanism
 var speed;
 var tempo;
-var cursorX; //cursor line's x
-var cursorY; //cursor line's y
-var angle = -90; //angle of the cursor
+// var cursorX; //cursor line's x
+// var cursorY; //cursor line's y
+// var angle = -90; //angle of the cursor
+var cursor;
 var alpha;
 var position = 0;
 //html interaction
@@ -65,11 +66,11 @@ function draw() {
   translate(width/2, height/2);
   // rotate(-90);
 
-  noStroke();
-  alpha = map((angle+90)%360, 0, 360, 0, 255);
-  mainColor.setAlpha(alpha);
-  fill(mainColor);
-  arc(0, 0, radiusBig, radiusBig, -90, angle%360);
+  // noStroke();
+  // alpha = map((angle+90)%360, 0, 360, 0, 255);
+  // mainColor.setAlpha(alpha);
+  // fill(mainColor);
+  // arc(0, 0, radiusBig, radiusBig, -90, angle%360);
 
   noFill();
   strokeWeight(2);
@@ -87,14 +88,16 @@ function draw() {
   fill(mainColor);
   text(talName, 0, 0);
 
-  position = updateCursor(position);
+  // position = updateCursor(position);
 
   //cursor
   // stroke(mainColor);
   // line(0, 0, cursorX, cursorY);
-  fill("red");
-  noStroke();
-  ellipse(cursorX, cursorY, 5, 5);
+  // fill("red");
+  // noStroke();
+  // ellipse(cursorX, cursorY, 5, 5);
+  cursor.update();
+  cursor.display();
 }
 
 function start() {
@@ -134,6 +137,7 @@ function start() {
   }
   slider.value(tempoInit);
   updateTempo();
+  cursor = new CreateCursor();
 }
 
 function StrokeCircle (matra, vibhag, circleType, bol) {
@@ -180,17 +184,26 @@ function StrokeCircle (matra, vibhag, circleType, bol) {
 }
 
 function CreateCursor () {
-
-}
-
-function updateCursor (position) {
-  var newPosition = millis();
-  increase = newPosition - position;
-  angle += (360 * increase) / speed;
-  angle = angle % 360;
-  cursorX = radiusBig * cos(angle);
-  cursorY = radiusBig * sin(angle);
-  return newPosition;
+  this.x = 0;
+  this.y = -radiusBig;
+  this.angle = 270;
+  this.position = 0;
+  this.update = function () {
+    var position = millis();
+    var increase = position - this.position;
+    this.angle += (360 * increase) / speed;
+    if (this.angle > 360) {
+      this.angle -= 360;
+    }
+    this.x = radiusBig * cos(this.angle);
+    this.y = radiusBig * sin(this.angle);
+    this.position = position;
+  }
+  this.display = function () {
+    fill("red");
+    noStroke();
+    ellipse(this.x, this.y, 5, 5)
+  }
 }
 
 function updateTempo () {
