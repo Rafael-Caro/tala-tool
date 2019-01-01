@@ -22,9 +22,12 @@ var cursor;
 var shade;
 // var alpha;
 // var position = 0;
+var playing = false;
+var timeDiff;
 //html interaction
 var slider;
 var select;
+var button;
 
 function preload () {
   talSet = loadJSON("files/talSet.json");
@@ -45,11 +48,18 @@ function setup() {
     .size(width-20, 20)
     .changed(updateTempo);
   select = createSelect()
+    .size(90, 25)
     .position(10, 10)
     .changed(start);
   for (var i = 0; i < talMenu.length; i++) {
     select.option(talMenu[i]);
   }
+  button = createButton("¡Comienza!")
+    .size(90, 25)
+    .position(width-100, 10)
+    .mousePressed(play);
+  print(select.size());
+  //start tal
   start();
   updateTempo();
 }
@@ -73,8 +83,10 @@ function draw() {
   // fill(mainColor);
   // arc(0, 0, radiusBig, radiusBig, -90, angle%360);
 
-  shade.update();
-  shade.display();
+  if (playing) {
+    shade.update();
+    shade.display();
+  }
 
   noFill();
   strokeWeight(2);
@@ -100,8 +112,10 @@ function draw() {
   // fill("red");
   // noStroke();
   // ellipse(cursorX, cursorY, 5, 5);
-  cursor.update();
-  cursor.display();
+  if (playing) {
+    cursor.update();
+    cursor.display();
+  }
 }
 
 function start() {
@@ -110,6 +124,9 @@ function start() {
   cursorX = 0;
   cursorY = -radiusBig;
   angle = -90;
+  button.html("¡Comienza!");
+  playing = false;
+
   var talSortName = select.value();
   var tal = talSet[talSortName];
   talName = tal["name"];
@@ -141,8 +158,6 @@ function start() {
   }
   slider.value(tempoInit);
   updateTempo();
-  cursor = new CreateCursor();
-  shade = new CreateShade();
 }
 
 function StrokeCircle (matra, vibhag, circleType, bol) {
@@ -194,7 +209,7 @@ function CreateCursor () {
   this.angle = 270;
   this.position = 0;
   this.update = function () {
-    var position = millis();
+    var position = millis() - timeDiff;
     var increase = position - this.position;
     this.angle += (360 * increase) / speed;
     if (this.angle > 360) {
@@ -219,7 +234,7 @@ function CreateShade () {
   this.alpha = 0;
   this.color = mainColor;
   this.update = function () {
-    var position = millis();
+    var position = millis() - timeDiff;
     var increase = position - this.position;
     this.angle += (360 * increase) / speed;
     if (this.angle > 360) {
@@ -245,4 +260,17 @@ function CreateShade () {
 function updateTempo () {
   tempo = slider.value();
   speed = avart * (60 / tempo) * 1000;
+}
+
+function play() {
+  if (playing == false) {
+    timeDiff = millis();
+    cursor = new CreateCursor();
+    shade = new CreateShade();
+    playing = true;
+    button.html("Para");
+  } else {
+    playing = false;
+    button.html("¡Comienza!");
+  }
 }
