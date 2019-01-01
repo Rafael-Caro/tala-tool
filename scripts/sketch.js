@@ -1,58 +1,60 @@
-var tal;
+//general variables
+var talSet;
+var talMenu = ["tīntāl", "ektāl"];
+//tal features
 var talName;
-var bolCircles = [];
+var avart;
+var strokeCircles;
+//style
 var radiusBig; //radius of the big circle
 var radius1 = 25; //radius of accented matra
-var radius2 = 20;
-var radius3 = 15;
-var matra = 16; //number of beats
-var cycle; //time in milliseconds of one cycle
-var cursorX; //cursor line's x
-var cursorY; //cursor line's y
-var cursor;
-var angle = -90; //angle of the cursor
-var slider;
-var tempo;
-var alpha;
+var radius2 = 20; //radius of unaccented matra
 var backColor;
 var mainColor;
-var bolColor;
+var matraColor;
+//machanism
+var speed;
+var tempo;
+var cursorX; //cursor line's x
+var cursorY; //cursor line's y
+var angle = -90; //angle of the cursor
+var alpha;
 var position = 0;
+//html interaction
+var slider;
+var select;
 
 function preload () {
-  tal = loadTable("samples/tintal.csv");
+  talSet = loadJSON("files/talSet.json");
 }
 
 function setup() {
   createCanvas(600, 600);
   ellipseMode(RADIUS);
   angleMode(DEGREES);
-  talName = "तीन ताल\ntīntāl"
+  //style
   radiusBig = width * (2 / 5);
-  slider = createSlider(5, 300, 60)
-    .position(10, height-30)
-    .size(width-20, 20);
-  cursorX = 0;
-  cursorY = -radiusBig;
   backColor = color(185, 239, 162);
   mainColor = color(249, 134, 50);
-  bolColor = color(249, 175, 120);
-  for (var i = 0; i < tal.getRowCount(); i++) {
-    var bolNum = tal.getNum(i, 0);
-    var tali = tal.getNum(i, 1);
-    var level = tal.getNum(i, 2);
-    bolAngle = map(bolNum, 0, matra, -90, 270);
-    var x = radiusBig * cos(bolAngle);
-    var y = radiusBig * sin(bolAngle);
-    var bol = tal.get(i, 3);
-    var bolCircle = new BolCircle(x, y, tali, level, bol);
-    bolCircles[i] = bolCircle;
+  matraColor = color(249, 175, 120);
+  //html interaction
+  slider = createSlider(5, 300)
+    .position(10, height-30)
+    .size(width-20, 20)
+    .changed(updateTempo);
+  select = createSelect()
+    .position(10, 10)
+    .changed(start);
+  for (var i = 0; i < talMenu.length; i++) {
+    select.option(talMenu[i]);
   }
+  start();
+  updateTempo();
 }
 
 function draw() {
   background(backColor);
-  tempo = slider.value(); //tempo
+  tempo = slider.value();
   fill(0);
   noStroke();
   textAlign(LEFT, BASELINE);
@@ -75,8 +77,8 @@ function draw() {
   stroke(mainColor);
   ellipse(0, 0, radiusBig, radiusBig);
   //draw circle per bol
-  for (var i = 0; i < bolCircles.length; i++) {
-    bolCircles[i].display();
+  for (var i = 0; i < strokeCircles.length; i++) {
+    strokeCircles[i].display();
   }
   textAlign(CENTER, CENTER);
   textSize(30);
@@ -85,7 +87,7 @@ function draw() {
   fill(mainColor);
   text(talName, 0, 0);
 
-  position = updatePosition(position);
+  position = updateCursor(position);
 
   //cursor
   // stroke(mainColor);
@@ -95,41 +97,98 @@ function draw() {
   ellipse(cursorX, cursorY, 5, 5);
 }
 
-function BolCircle (x, y, tali, level, bol) {
-  this.x = x;
-  this.y = y;
+function start() {
+  //restart values
+  strokeCircles = [];
+  cursorX = 0;
+  cursorY = -radiusBig;
+  angle = -90;
+  var talSortName = select.value();
+  var tal = talSet[talSortName];
+  talName = tal["name"];
+  avart = tal["avart"];
+  var tempoInit = tal["tempoInit"];
+  var theka = tal["theka"];
+  for (var i = 0; i < theka.length; i++) {
+    var stroke = theka[i];
+    var matra = stroke["matra"];
+    var vibhag; //tali or khali
+    if (int(stroke["vibhag"]) > 0) {
+      vibhag = "tali";
+    } else {
+      vibhag = "khali";
+    }
+    var circleType;
+    if (i == 0) {
+      circleType = "sam";
+    } else if ((stroke["vibhag"] % 1) < 0.101) {
+      circleType = 1;
+    } else if ((stroke["vibhag"] * 10 % 1) == 0) {
+      circleType = 2;
+    } else {
+      circleType = 3;
+    }
+    var bol = stroke["bol"];
+    var strokeCircle = new StrokeCircle(matra, vibhag, circleType, bol);
+    strokeCircles[i] = strokeCircle;
+  }
+  slider.value(tempoInit);
+}
+
+function StrokeCircle (matra, vibhag, circleType, bol) {
+  this.circleAngle = map(matra, 0, avart, -90, 270);
+  this.x = radiusBig * cos(this.circleAngle);
+  this.y = radiusBig * sin(this.circleAngle);
+  this.bol = bol;
+
+  this.strokeWeight = 2;
+
+  if (circleType == "sam") {
+    this.color = mainColor;
+  } else if (vibhag == "tali") {
+    this.color = matraColor;
+  } else if (vibhag == "khali") {
+    this.color = backColor;
+  }
+
+  if (circleType == "sam") {
+    this.radius = radius1;
+  } else if (circleType == 1) {
+    this.radius = radius1;
+  } else if (circleType == 2){
+    this.radius = radius2;
+  } else {
+    this.radius = radius2;
+    this.color = color(0, 0);
+    this.strokeWeight = 0;
+  }
+
   this.display = function () {
-    if (tali == 1) {
-      fill(bolColor);
-    } else {
-      fill(backColor);
-    }
-    if (level == 1) {
-      this.radius = radius1;
-    } else if (level == 2) {
-      this.radius = radius2;
-    } else {
-      this.radius = radius3;
-    }
     stroke(mainColor);
-    strokeWeight(2);
+    strokeWeight(this.strokeWeight);
+    fill(this.color);
     ellipse(this.x, this.y, this.radius, this.radius);
+
     textAlign(CENTER, CENTER);
     noStroke();
     fill(0);
     textSize(15);
     textStyle(BOLD);
-    text(bol, this.x, this.y);
+    text(this.bol, this.x, this.y);
   }
 }
 
-function updatePosition (position) {
+function updateCursor (position) {
   var newPosition = millis();
   increase = newPosition - position;
-  speed = matra * (60 / tempo) * 1000;
   angle += (360 * increase) / speed;
   angle = angle % 360;
   cursorX = radiusBig * cos(angle);
   cursorY = radiusBig * sin(angle);
   return newPosition;
+}
+
+function updateTempo () {
+  tempo = slider.value();
+  speed = avart * (60 / tempo) * 1000;
 }
