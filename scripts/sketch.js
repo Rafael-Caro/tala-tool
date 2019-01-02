@@ -35,6 +35,11 @@ function preload () {
 
 function setup() {
   var canvas = createCanvas(600, 600);
+  var div = createDiv()
+    .id("sketch-holder")
+    .style("width: " + width + "px; margin: 10px auto; position: relative;");
+  // var divElem = new p5.Element(input.elt);
+  // divElem.style
   canvas.parent("sketch-holder");
   ellipseMode(RADIUS);
   angleMode(DEGREES);
