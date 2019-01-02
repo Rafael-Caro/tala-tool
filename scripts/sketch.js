@@ -34,7 +34,8 @@ function preload () {
 }
 
 function setup() {
-  createCanvas(600, 600);
+  var canvas = createCanvas(600, 600);
+  canvas.parent("sketch-holder");
   ellipseMode(RADIUS);
   angleMode(DEGREES);
   //style
@@ -46,19 +47,22 @@ function setup() {
   slider = createSlider(5, 300)
     .position(10, height-30)
     .size(width-20, 20)
-    .changed(updateTempo);
+    .changed(updateTempo)
+    .parent("sketch-holder");;
   select = createSelect()
     .size(90, 25)
     .position(10, 10)
-    .changed(start);
+    .changed(start)
+    .parent("sketch-holder");;
   for (var i = 0; i < talMenu.length; i++) {
     select.option(talMenu[i]);
   }
   button = createButton("¡Comienza!")
     .size(90, 25)
     .position(width-100, 10)
-    .mousePressed(play);
-  print(select.size());
+    .mousePressed(play)
+    .parent("sketch-holder");
+    // .style("position: static;");
   //start tal
   start();
   updateTempo();
