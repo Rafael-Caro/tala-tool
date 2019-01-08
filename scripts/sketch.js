@@ -4,7 +4,7 @@ var talMenu = ["tīntāl", "ektāl"];
 //tal features
 var talName;
 var avart;
-var strokeCircles;
+var strokeCircles; //list of strokeCircles
 //style
 var radiusBig; //radius of the big circle
 var radius1 = 25; //radius of accented matra
@@ -178,11 +178,11 @@ function StrokeCircle (matra, vibhag, circleType, bol) {
   this.strokeWeight = 2;
 
   if (circleType == "sam") {
-    this.color = mainColor;
+    this.col = mainColor;
   } else if (vibhag == "tali") {
-    this.color = matraColor;
+    this.col = matraColor;
   } else if (vibhag == "khali") {
-    this.color = backColor;
+    this.col = backColor;
   }
 
   if (circleType == "sam") {
@@ -193,14 +193,14 @@ function StrokeCircle (matra, vibhag, circleType, bol) {
     this.radius = radius2;
   } else {
     this.radius = radius2;
-    this.color = color(0, 0);
+    this.col = color(0, 0);
     this.strokeWeight = 0;
   }
 
   this.display = function () {
     stroke(mainColor);
     strokeWeight(this.strokeWeight);
-    fill(this.color);
+    fill(this.col);
     ellipse(this.x, this.y, this.radius, this.radius);
 
     textAlign(CENTER, CENTER);
@@ -241,7 +241,7 @@ function CreateShade () {
   this.angle = 270;
   this.position = 0;
   this.alpha = 0;
-  this.color = mainColor;
+  this.col = mainColor;
   this.update = function () {
     var position = millis() - timeDiff;
     var increase = position - this.position;
@@ -259,8 +259,8 @@ function CreateShade () {
     this.position = position;
   }
   this.display = function () {
-    this.color.setAlpha(this.alpha);
-    fill(this.color);
+    this.col.setAlpha(this.alpha);
+    fill(this.col);
     noStroke();
     arc(0, 0, radiusBig, radiusBig, 270, this.angle);
   }
