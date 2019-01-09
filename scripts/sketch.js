@@ -103,7 +103,7 @@ function setup() {
     // .style("position: static;");
   //start tal
   // start();
-  updateTempo();
+  // updateTempo();
 }
 
 function draw() {
