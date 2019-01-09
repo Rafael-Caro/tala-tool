@@ -265,7 +265,7 @@ function StrokeCircle (matra, vibhag, circleType, bol) {
   this.clicked = function () {
     var d = dist(this.x, this.y, mouseX-width/2, mouseY-height/2);
     if (d < this.radius) {
-      soundDic[this.bol].play();
+      soundDic[this.bol.toLowerCase()].play();
     }
   }
 }
