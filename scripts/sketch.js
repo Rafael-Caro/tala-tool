@@ -301,7 +301,8 @@ function strokePlayer (angle) {
       strokeToPlay++;
     }
   }
-  if (strokeToPlay == 16) {
+  print(strokeToPlay, angle);
+  if (strokeToPlay == strokePlayPoints.length) {
     strokeToPlay = 0;
   }
 }
@@ -328,14 +329,31 @@ function playTal() {
 
 function mousePressed() {
   if (loaded == false) {
+    var a = millis();
     dha = loadSound("sounds/dha.wav");
     soundDic["dha"] = dha;
     dhin = loadSound("sounds/dhin.wav");
     soundDic["dhin"] = dhin;
+    ge = loadSound("sounds/ga.wav");
+    soundDic["ge"] = ge;
+    kat = loadSound("sounds/kat.wav");
+    soundDic["kat"] = kat;
+    ki = loadSound("sounds/ka.wav");
+    soundDic["ki"] = ki;
+    na = loadSound("sounds/na.wav");
+    soundDic["na"] = na;
+    ra = loadSound("sounds/re.wav");
+    soundDic["ra"] = ra;
     ta = loadSound("sounds/na.wav");
     soundDic["ta"] = ta;
+    ti = loadSound("sounds/te.wav");
+    soundDic["te"] = ti;
+    soundDic["ti"] = ti;
     tin = loadSound("sounds/tin.wav");
     soundDic["tin"] = tin;
+    tun = loadSound("sounds/tun.wav");
+    soundDic["tun"] = tun;
+    print((millis() - a)/1000);
     loaded = true;
   }
   if (playing == false) {
