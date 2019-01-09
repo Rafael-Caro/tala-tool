@@ -1,6 +1,6 @@
 //general variables
 var talSet;
-var talMenu = ["tīntāl", "ektāl"];
+var talMenu = ["tīntāl", "ektāl", "jhaptāl", "rūpak tāl"];
 //tal features
 var talName;
 var avart;
@@ -161,6 +161,7 @@ function start() {
   //restart values
   strokeCircles = [];
   icons = [];
+  strokePlayPoints = [];
   cursorX = 0;
   cursorY = -radiusBig;
   angle = -90;
@@ -341,7 +342,7 @@ function CreateIcon (matra, vibhag, size) {
 
 function strokePlayer (angle) {
   var checkPoint = strokePlayPoints[strokeToPlay];
-  if (checkPoint == 0) {
+  if ((strokeToPlay > 0) && (checkPoint < strokePlayPoints[strokeToPlay-1])) {
     checkPoint = strokePlayPoints[strokeToPlay - 1];
     if (angle < checkPoint) {
       var sC = strokeCircles[strokeToPlay];
@@ -359,6 +360,7 @@ function strokePlayer (angle) {
       strokeToPlay++;
     }
   }
+  print(strokeToPlay, angle, checkPoint);
   if (strokeToPlay == strokePlayPoints.length) {
     strokeToPlay = 0;
   }
