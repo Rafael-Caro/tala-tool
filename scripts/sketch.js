@@ -29,16 +29,33 @@ var slider;
 var select;
 var button;//sounds
 var loaded = false;
+// Sound
 var dha;
 var dhin;
+var ge;
+var kat;
+var ki;
+var na;
+var ra;
 var ta;
+var ti;
 var tin;
+var tun;
 var soundDic = {};
 var strokePlayPoints = [];
 var strokeToPlay = 0;
+// Icons
+var wave;
+var clap;
+var iconSamSize = 0.3;
+var iconSize = 0.25;
+var iconDistance = 0.77;
+var icons = [];
 
 function preload () {
   talSet = loadJSON("files/talSet.json");
+  wave = loadImage("files/wave.svg");
+  clap = loadImage("files/clap.svg");
 }
 
 function setup() {
@@ -51,6 +68,7 @@ function setup() {
   canvas.parent("sketch-holder");
   ellipseMode(RADIUS);
   angleMode(DEGREES);
+  imageMode(CENTER);
   //style
   radiusBig = width * (2 / 5);
   backColor = color(185, 239, 162);
@@ -114,6 +132,9 @@ function draw() {
   for (var i = 0; i < strokeCircles.length; i++) {
     strokeCircles[i].display();
   }
+  for (var i = 0; i < icons.length; i++) {
+    icons[i].display();
+  }
   textAlign(CENTER, CENTER);
   textSize(30);
   strokeWeight(5);
@@ -139,6 +160,7 @@ function draw() {
 function start() {
   //restart values
   strokeCircles = [];
+  icons = [];
   cursorX = 0;
   cursorY = -radiusBig;
   angle = -90;
@@ -163,8 +185,12 @@ function start() {
     var circleType;
     if (i == 0) {
       circleType = "sam";
+      var icon = new CreateIcon(matra, vibhag, iconSamSize);
+      icons.push(icon);
     } else if ((stroke["vibhag"] % 1) < 0.101) {
       circleType = 1;
+      var icon = new CreateIcon(matra, vibhag, iconSize);
+      icons.push(icon);
     } else if ((stroke["vibhag"] * 10 % 1) == 0) {
       circleType = 2;
     } else {
@@ -207,7 +233,7 @@ function StrokeCircle (matra, vibhag, circleType, bol) {
     this.volume = 1;
   } else if (circleType == 2){
     this.radius = radius2;
-    this.txtStyle = BOLD;
+    this.txtStyle = NORMAL;
     this.volume = 0.7;
   } else {
     this.radius = radius2;
@@ -298,6 +324,21 @@ function CreateShade () {
   }
 }
 
+function CreateIcon (matra, vibhag, size) {
+  this.circleAngle = map(matra, 0, avart, -90, 270);
+  this.x = radiusBig * iconDistance * cos(this.circleAngle);
+  this.y = radiusBig * iconDistance * sin(this.circleAngle);
+  if (vibhag == "tali") {
+    this.img = clap;
+  } else if (vibhag == "khali") {
+    this.img = wave;
+  }
+
+  this.display = function () {
+    image(this.img, this.x, this.y, this.img.width*size, this.img.height*size);
+  }
+}
+
 function strokePlayer (angle) {
   var checkPoint = strokePlayPoints[strokeToPlay];
   if (checkPoint == 0) {
@@ -318,7 +359,6 @@ function strokePlayer (angle) {
       strokeToPlay++;
     }
   }
-  print(strokeToPlay, angle);
   if (strokeToPlay == strokePlayPoints.length) {
     strokeToPlay = 0;
   }
@@ -346,7 +386,6 @@ function playTal() {
 
 function mousePressed() {
   if (loaded == false) {
-    var a = millis();
     dha = loadSound("sounds/dha.wav");
     soundDic["dha"] = dha;
     dhin = loadSound("sounds/dhin.wav");
@@ -370,7 +409,6 @@ function mousePressed() {
     soundDic["tin"] = tin;
     tun = loadSound("sounds/tun.wav");
     soundDic["tun"] = tun;
-    print((millis() - a)/1000);
     loaded = true;
   }
   if (playing == false) {
