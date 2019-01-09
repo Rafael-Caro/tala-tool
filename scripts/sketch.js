@@ -100,17 +100,17 @@ function setup() {
 }
 
 function draw() {
+  translate(width/2, height/2);
   background(backColor);
   tempo = slider.value();
   fill(0);
   noStroke();
   textAlign(LEFT, BASELINE);
   textSize(12);
-  text(str(tempo)+" bpm", 10, height-30); //tempo box
+  text(str(tempo)+" bpm", -width/2+10, height/2-30); //tempo box
 
   push();
-  translate(width/2, height/2);
-  // rotate(-90);
+  rotate(-90);
 
   // noStroke();
   // alpha = map((angle+90)%360, 0, 360, 0, 255);
@@ -135,6 +135,13 @@ function draw() {
   for (var i = 0; i < icons.length; i++) {
     icons[i].display();
   }
+  if (playing) {
+    cursor.update();
+    cursor.display();
+    strokePlayer(cursor.angle);
+  }
+  pop();
+
   textAlign(CENTER, CENTER);
   textSize(30);
   strokeWeight(5);
@@ -150,11 +157,6 @@ function draw() {
   // fill("red");
   // noStroke();
   // ellipse(cursorX, cursorY, 5, 5);
-  if (playing) {
-    cursor.update();
-    cursor.display();
-    strokePlayer(cursor.angle);
-  }
 }
 
 function start() {
@@ -164,7 +166,7 @@ function start() {
   strokePlayPoints = [];
   cursorX = 0;
   cursorY = -radiusBig;
-  angle = -90;
+  var angle = 0;
   button.html("¡Comienza!");
   playing = false;
 
@@ -216,7 +218,11 @@ function StrokeCircle (matra, vibhag, circleType, bol) {
   this.strokeWeight = 2;
 
   if (circleType == "sam") {
-    this.col = mainColor;
+    if (vibhag == "tali") {
+      this.col = mainColor;
+    } else {
+      this.col = backColor;
+    }
   } else if (vibhag == "tali") {
     this.col = matraColor;
   } else if (vibhag == "khali") {
@@ -245,26 +251,32 @@ function StrokeCircle (matra, vibhag, circleType, bol) {
     increment = 1.04;
   }
 
-  this.circleAngle = map(matra, 0, avart, -90, 270);
+  this.circleAngle = map(matra, 0, avart, 0, 360);
   this.x = radiusBig * increment * cos(this.circleAngle);
   this.y = radiusBig * increment * sin(this.circleAngle);
 
   this.display = function () {
+    push();
+    translate(this.x, this.y);
     stroke(mainColor);
     strokeWeight(this.strokeWeight);
     fill(this.col);
-    ellipse(this.x, this.y, this.radius, this.radius);
+    ellipse(0, 0, this.radius, this.radius);
 
     textAlign(CENTER, CENTER);
     noStroke();
     fill(0);
     textSize(this.radius * 0.75);
     textStyle(this.txtStyle);
-    text(this.bol, this.x, this.y);
+    rotate(90);
+    text(this.bol, 0, 0);
+    pop();
   }
 
   this.clicked = function () {
-    var d = dist(this.x, this.y, mouseX-width/2, mouseY-height/2);
+    var x = -mouseY+height/2;
+    var y = mouseX-width/2;
+    var d = dist(this.x, this.y, x, y);
     if (d < this.radius) {
       soundDic[this.bol.toLowerCase()].play();
     }
@@ -274,7 +286,7 @@ function StrokeCircle (matra, vibhag, circleType, bol) {
 function CreateCursor () {
   this.x = 0;
   this.y = -radiusBig;
-  this.angle = 270;
+  this.angle = 0;
   this.position = 0;
   this.update = function () {
     var position = millis() - timeDiff;
@@ -297,7 +309,7 @@ function CreateCursor () {
 function CreateShade () {
   this.x = 0;
   this.y = -radiusBig;
-  this.angle = 270;
+  this.angle = 0;
   this.position = 0;
   this.alpha = 0;
   this.col = mainColor;
@@ -308,11 +320,11 @@ function CreateShade () {
     if (this.angle > 360) {
       this.angle -= 360;
     }
-    var alphaAngle = this.angle + 90;
-    if (alphaAngle > 360) {
-      alphaAngle -= 360;
-    }
-    this.alpha = map(alphaAngle, 0, 360, 0, 255);
+    // var alphaAngle = this.angle + 90;
+    // if (alphaAngle > 360) {
+    //   alphaAngle -= 360;
+    // }
+    this.alpha = map(this.angle, 0, 360, 0, 255);
     this.x = radiusBig * cos(this.angle);
     this.y = radiusBig * sin(this.angle);
     this.position = position;
@@ -321,12 +333,12 @@ function CreateShade () {
     this.col.setAlpha(this.alpha);
     fill(this.col);
     noStroke();
-    arc(0, 0, radiusBig, radiusBig, 270, this.angle);
+    arc(0, 0, radiusBig, radiusBig, 0, this.angle);
   }
 }
 
 function CreateIcon (matra, vibhag, size) {
-  this.circleAngle = map(matra, 0, avart, -90, 270);
+  this.circleAngle = map(matra, 0, avart, 0, 360);
   this.x = radiusBig * iconDistance * cos(this.circleAngle);
   this.y = radiusBig * iconDistance * sin(this.circleAngle);
   if (vibhag == "tali") {
@@ -336,17 +348,20 @@ function CreateIcon (matra, vibhag, size) {
   }
 
   this.display = function () {
-    image(this.img, this.x, this.y, this.img.width*size, this.img.height*size);
+    push();
+    translate(this.x, this.y);
+    rotate(90);
+    image(this.img, 0, 0, this.img.width*size, this.img.height*size);
+    pop();
   }
 }
 
 function strokePlayer (angle) {
   var checkPoint = strokePlayPoints[strokeToPlay];
-  if ((strokeToPlay > 0) && (checkPoint < strokePlayPoints[strokeToPlay-1])) {
-    checkPoint = strokePlayPoints[strokeToPlay - 1];
-    if (angle < checkPoint) {
+  if (checkPoint == 0) {
+    if (angle < strokePlayPoints[strokePlayPoints.length-1]) {
       var sC = strokeCircles[strokeToPlay];
-      var sound = soundDic[sC.bol];
+      var sound = soundDic[sC.bol.toLowerCase()];
       sound.setVolume(sC.volume);
       sound.play();
       strokeToPlay++;
@@ -360,7 +375,6 @@ function strokePlayer (angle) {
       strokeToPlay++;
     }
   }
-  print(strokeToPlay, angle, checkPoint);
   if (strokeToPlay == strokePlayPoints.length) {
     strokeToPlay = 0;
   }
@@ -379,7 +393,7 @@ function playTal() {
     playing = true;
     button.html("Para");
     strokeToPlay = 0;
-    strokePlayer(-90);
+    strokePlayer(0);
   } else {
     playing = false;
     button.html("¡Comienza!");
@@ -411,6 +425,7 @@ function mousePressed() {
     soundDic["tin"] = tin;
     tun = loadSound("sounds/tun.wav");
     soundDic["tun"] = tun;
+    print('loaded');
     loaded = true;
   }
   if (playing == false) {
