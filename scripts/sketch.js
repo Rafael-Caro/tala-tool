@@ -27,7 +27,15 @@ var timeDiff;
 //html interaction
 var slider;
 var select;
-var button;
+var button;//sounds
+var loaded = false;
+var dha;
+var dhin;
+var ta;
+var tin;
+var soundDic = {};
+var strokePlayPoints = [];
+var strokeToPlay = 0;
 
 function preload () {
   talSet = loadJSON("files/talSet.json");
@@ -65,7 +73,7 @@ function setup() {
   button = createButton("¡Comienza!")
     .size(90, 25)
     .position(width-100, 10)
-    .mousePressed(play)
+    .mousePressed(playTal)
     .parent("sketch-holder");
     // .style("position: static;");
   //start tal
@@ -124,6 +132,7 @@ function draw() {
   if (playing) {
     cursor.update();
     cursor.display();
+    strokePlayer(cursor.angle);
   }
 }
 
@@ -164,6 +173,11 @@ function start() {
     var bol = stroke["bol"];
     var strokeCircle = new StrokeCircle(matra, vibhag, circleType, bol);
     strokeCircles[i] = strokeCircle;
+    if (strokeCircle.circleAngle < 0) {
+      strokePlayPoints[i] = 360 + strokeCircle.circleAngle;
+    } else {
+      strokePlayPoints[i] = strokeCircle.circleAngle;
+    }
   }
   slider.value(tempoInit);
   updateTempo();
@@ -209,6 +223,13 @@ function StrokeCircle (matra, vibhag, circleType, bol) {
     textSize(15);
     textStyle(BOLD);
     text(this.bol, this.x, this.y);
+  }
+
+  this.clicked = function () {
+    var d = dist(this.x, this.y, mouseX-width/2, mouseY-height/2);
+    if (d < this.radius) {
+      soundDic[this.bol].play();
+    }
   }
 }
 
@@ -266,20 +287,60 @@ function CreateShade () {
   }
 }
 
+function strokePlayer (angle) {
+  var checkPoint = strokePlayPoints[strokeToPlay];
+  if (checkPoint == 0) {
+    checkPoint = strokePlayPoints[strokeToPlay - 1];
+    if (angle < checkPoint) {
+      soundDic[strokeCircles[strokeToPlay].bol].play();
+      strokeToPlay++;
+    }
+  } else {
+    if (angle >= checkPoint) {
+      soundDic[strokeCircles[strokeToPlay].bol].play();
+      strokeToPlay++;
+    }
+  }
+  if (strokeToPlay == 16) {
+    strokeToPlay = 0;
+  }
+}
+
 function updateTempo () {
   tempo = slider.value();
   speed = avart * (60 / tempo) * 1000;
 }
 
-function play() {
+function playTal() {
   if (playing == false) {
     timeDiff = millis();
     cursor = new CreateCursor();
     shade = new CreateShade();
     playing = true;
     button.html("Para");
+    strokeToPlay = 0;
+    strokePlayer(-90);
   } else {
     playing = false;
     button.html("¡Comienza!");
+  }
+}
+
+function mousePressed() {
+  if (loaded == false) {
+    dha = loadSound("sounds/dha.wav");
+    soundDic["dha"] = dha;
+    dhin = loadSound("sounds/dhin.wav");
+    soundDic["dhin"] = dhin;
+    ta = loadSound("sounds/na.wav");
+    soundDic["ta"] = ta;
+    tin = loadSound("sounds/tin.wav");
+    soundDic["tin"] = tin;
+    loaded = true;
+  }
+  if (playing == false) {
+    for (var i = 0; i < strokeCircles.length; i++) {
+      strokeCircles[i].clicked();
+    }
   }
 }
