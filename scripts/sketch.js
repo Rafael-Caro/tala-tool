@@ -4,7 +4,7 @@ var talMenu = ["tīntāl", "ektāl", "jhaptāl", "rūpak tāl"];
 //tal features
 var talName;
 var avart;
-var strokeCircles; //list of strokeCircles
+var strokeCircles = []; //list of strokeCircles
 //style
 var radiusBig; //radius of the big circle
 var radius1 = 25; //radius of accented matra
@@ -79,12 +79,19 @@ function setup() {
     .position(10, height-30)
     .size(width-20, 20)
     .changed(updateTempo)
-    .parent("sketch-holder");;
+    .parent("sketch-holder");
   select = createSelect()
-    .size(90, 25)
+    .size(100, 25)
     .position(10, 10)
     .changed(start)
-    .parent("sketch-holder");;
+    .parent("sketch-holder");
+  select.option("Elige un tāl");
+  var noTal = select.child();
+  // print(noTal[0]);
+  noTal[0].setAttribute("selected", "true");
+  noTal[0].setAttribute("disabled", "true");
+  noTal[0].setAttribute("hidden", "true");
+  noTal[0].setAttribute("style", "display: none");
   for (var i = 0; i < talMenu.length; i++) {
     select.option(talMenu[i]);
   }
@@ -95,13 +102,13 @@ function setup() {
     .parent("sketch-holder");
     // .style("position: static;");
   //start tal
-  start();
+  // start();
   updateTempo();
 }
 
 function draw() {
-  translate(width/2, height/2);
   background(backColor);
+  translate(width/2, height/2);
   tempo = slider.value();
   fill(0);
   noStroke();
