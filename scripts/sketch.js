@@ -184,11 +184,8 @@ function start() {
 }
 
 function StrokeCircle (matra, vibhag, circleType, bol) {
-  this.circleAngle = map(matra, 0, avart, -90, 270);
-  this.x = radiusBig * cos(this.circleAngle);
-  this.y = radiusBig * sin(this.circleAngle);
   this.bol = bol;
-
+  var increment = 1;
   this.strokeWeight = 2;
 
   if (circleType == "sam") {
@@ -201,15 +198,29 @@ function StrokeCircle (matra, vibhag, circleType, bol) {
 
   if (circleType == "sam") {
     this.radius = radius1;
+    this.txtStyle = BOLD;
+    this.bol = this.bol.toUpperCase();
+    this.volume = 1;
   } else if (circleType == 1) {
     this.radius = radius1;
+    this.txtStyle = BOLD;
+    this.volume = 1;
   } else if (circleType == 2){
     this.radius = radius2;
+    this.txtStyle = BOLD;
+    this.volume = 0.7;
   } else {
     this.radius = radius2;
     this.col = color(0, 0);
+    this.txtStyle = NORMAL;
     this.strokeWeight = 0;
+    this.volume = 0.7;
+    increment = 1.04;
   }
+
+  this.circleAngle = map(matra, 0, avart, -90, 270);
+  this.x = radiusBig * increment * cos(this.circleAngle);
+  this.y = radiusBig * increment * sin(this.circleAngle);
 
   this.display = function () {
     stroke(mainColor);
@@ -220,8 +231,8 @@ function StrokeCircle (matra, vibhag, circleType, bol) {
     textAlign(CENTER, CENTER);
     noStroke();
     fill(0);
-    textSize(15);
-    textStyle(BOLD);
+    textSize(this.radius * 0.75);
+    textStyle(this.txtStyle);
     text(this.bol, this.x, this.y);
   }
 
@@ -292,12 +303,18 @@ function strokePlayer (angle) {
   if (checkPoint == 0) {
     checkPoint = strokePlayPoints[strokeToPlay - 1];
     if (angle < checkPoint) {
-      soundDic[strokeCircles[strokeToPlay].bol].play();
+      var sC = strokeCircles[strokeToPlay];
+      var sound = soundDic[sC.bol];
+      sound.setVolume(sC.volume);
+      sound.play();
       strokeToPlay++;
     }
   } else {
     if (angle >= checkPoint) {
-      soundDic[strokeCircles[strokeToPlay].bol].play();
+      var sC = strokeCircles[strokeToPlay];
+      var sound = soundDic[sC.bol.toLowerCase()];
+      sound.setVolume(sC.volume);
+      sound.play();
       strokeToPlay++;
     }
   }
