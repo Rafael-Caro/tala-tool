@@ -402,6 +402,7 @@ function playTal() {
 
 function mousePressed() {
   if (loaded == false) {
+    var init = millis();
     dha = loadSound("sounds/dha.wav");
     soundDic["dha"] = dha;
     dhin = loadSound("sounds/dhin.wav");
@@ -425,7 +426,8 @@ function mousePressed() {
     soundDic["tin"] = tin;
     tun = loadSound("sounds/tun.wav");
     soundDic["tun"] = tun;
-    print('loaded');
+    var end = millis();
+    print('Sounds loaded in ' + str(end-init)/1000 + ' seconds.');
     loaded = true;
   }
   if (playing == false) {
