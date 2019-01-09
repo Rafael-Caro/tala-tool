@@ -47,8 +47,8 @@ var strokeToPlay = 0;
 // Icons
 var wave;
 var clap;
-var iconSamSize = 0.3;
-var iconSize = 0.25;
+var iconSamSize = radius1*1.7;
+var iconSize = radius2*1.7;
 var iconDistance = 0.77;
 var icons = [];
 
@@ -255,7 +255,7 @@ function StrokeCircle (matra, vibhag, circleType, bol) {
     this.txtStyle = NORMAL;
     this.strokeWeight = 0;
     this.volume = 0.7;
-    increment = 1.04;
+    increment = 1.05;
   }
 
   this.circleAngle = map(matra, 0, avart, 0, 360);
@@ -358,7 +358,7 @@ function CreateIcon (matra, vibhag, size) {
     push();
     translate(this.x, this.y);
     rotate(90);
-    image(this.img, 0, 0, this.img.width*size, this.img.height*size);
+    image(this.img, 0, 0, size, size);
     pop();
   }
 }
