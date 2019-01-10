@@ -93,7 +93,7 @@ function setup() {
   noTal[0].setAttribute("hidden", "true");
   noTal[0].setAttribute("style", "display: none");
   for (var i = 0; i < talMenu.length; i++) {
-    select.option(talMenu[i]);
+    select.option(talMenu[i] + " (" + talSet[talMenu[i]]["avart"] + ")");
   }
   button = createButton("¡Comienza!")
     .size(90, 25)
