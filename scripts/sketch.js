@@ -1,5 +1,5 @@
 //general variables
-var talSet;
+var talInfo;
 var talMenu = ["tīntāl", "ektāl", "jhaptāl", "rūpak tāl"];
 //tal features
 var talName;
@@ -53,7 +53,7 @@ var iconDistance = 0.77;
 var icons = [];
 
 function preload () {
-  talSet = loadJSON("files/talSet.json");
+  talInfo = loadJSON("files/talInfo.json");
   wave = loadImage("files/wave.svg");
   clap = loadImage("files/clap.svg");
 }
@@ -93,7 +93,7 @@ function setup() {
   noTal[0].setAttribute("hidden", "true");
   noTal[0].setAttribute("style", "display: none");
   for (var i = 0; i < talMenu.length; i++) {
-    select.option(talMenu[i] + " (" + talSet[talMenu[i]]["avart"] + ")");
+    select.option(talMenu[i] + " (" + talInfo[talMenu[i]]["avart"] + ")");
   }
   button = createButton("¡Comienza!")
     .size(90, 25)
@@ -178,7 +178,7 @@ function start() {
   playing = false;
 
   var talSortName = select.value().split(" ")[0];
-  var tal = talSet[talSortName];
+  var tal = talInfo[talSortName];
   talName = tal["name"];
   avart = tal["avart"];
   var tempoInit = tal["tempoInit"];
