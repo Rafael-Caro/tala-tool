@@ -60,9 +60,8 @@ function preload () {
 
 function setup() {
   var canvas = createCanvas(600, 600);
-  var div = createDiv()
-    .id("sketch-holder")
-    .style("width: " + width + "px; margin: 10px auto; position: relative;");
+  var div = select("#sketch-holder");
+  div.style("width: " + width + "px; margin: 10px auto; position: relative;");
   // var divElem = new p5.Element(input.elt);
   // divElem.style
   canvas.parent("sketch-holder");
@@ -99,7 +98,8 @@ function setup() {
     .size(90, 25)
     .position(width-100, 10)
     .mousePressed(playTal)
-    .parent("sketch-holder");
+    .parent("sketch-holder")
+    .attribute("disabled", "true");
     // .style("position: static;");
   //start tal
   // start();
@@ -175,6 +175,9 @@ function start() {
   cursorY = -radiusBig;
   var angle = 0;
   button.html("¡Comienza!");
+  if (button.attribute("disabled")) {
+    button.removeAttribute("disabled");
+  }
   playing = false;
 
   var talSortName = select.value().substring(0, select.value().indexOf("tāl")+"tāl".length);
@@ -407,7 +410,7 @@ function playTal() {
   }
 }
 
-function mousePressed() {
+function mouseClicked() {
   if (loaded == false) {
     var init = millis();
     dha = loadSound("sounds/dha.wav");
