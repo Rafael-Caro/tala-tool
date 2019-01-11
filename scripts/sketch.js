@@ -177,7 +177,7 @@ function start() {
   button.html("¡Comienza!");
   playing = false;
 
-  var talSortName = select.value().split(" ")[0];
+  var talSortName = select.value().substring(0, select.value().indexOf("tāl")+"tāl".length);
   var tal = talInfo[talSortName];
   talName = tal["name"];
   avart = tal["avart"];
