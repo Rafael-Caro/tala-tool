@@ -311,7 +311,8 @@ function CreateCursor () {
   }
   this.display = function () {
     fill("red");
-    noStroke();
+    stroke(50);
+    strokeWeight(1);
     ellipse(this.x, this.y, 5, 5)
   }
 }
