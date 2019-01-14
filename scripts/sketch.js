@@ -71,6 +71,7 @@ function setup() {
   ellipseMode(RADIUS);
   angleMode(DEGREES);
   imageMode(CENTER);
+  textFont("Laila");
   //style
   radiusBig = width * (2 / 5);
   backColor = color(185, 239, 162);
@@ -273,20 +274,24 @@ function StrokeCircle (matra, vibhag, circleType, bol) {
   }
 
   if (circleType == "sam") {
-    this.radius = radius1;
+    this.radius = radius1*1.2;
+    this.txtSize = radius1 * 0.7;
     this.txtStyle = BOLD;
     this.bol = this.bol.toUpperCase();
     this.volume = 1;
   } else if (circleType == 1) {
     this.radius = radius1;
+    this.txtSize = radius1 * 0.75;
     this.txtStyle = BOLD;
     this.volume = 1;
   } else if (circleType == 2){
     this.radius = radius2;
+    this.txtSize = radius2 * 0.75;
     this.txtStyle = NORMAL;
     this.volume = 0.7;
   } else {
     this.radius = radius2;
+    this.txtSize = radius2 * 0.75;
     this.col = color(0, 0);
     this.txtStyle = NORMAL;
     this.strokeWeight = 0;
@@ -310,7 +315,7 @@ function StrokeCircle (matra, vibhag, circleType, bol) {
       textAlign(CENTER, CENTER);
       noStroke();
       fill(0);
-      textSize(this.radius * 0.75);
+      textSize(this.txtSize);
       textStyle(this.txtStyle);
       rotate(90);
       text(this.bol, 0, 0);
