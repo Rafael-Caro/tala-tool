@@ -28,6 +28,9 @@ var timeDiff;
 var slider;
 var select;
 var button;//sounds
+var showTheka;
+var showCursor;
+var showTal;
 var loaded = false;
 // Sound
 var dha;
@@ -94,6 +97,24 @@ function setup() {
   for (var i = 0; i < talMenu.length; i++) {
     select.option(talMenu[i] + " (" + talInfo[talMenu[i]]["avart"] + ")");
   }
+  showTheka = createCheckbox('ṭhekā', true)
+    .position(10, height*0.1)
+    .parent("sketch-holder");
+  showCursor = createCheckbox('cursor', true)
+    .position(10, showTheka.position()["y"]+showTheka.height+5)
+    .parent("sketch-holder");
+  showTal = createCheckbox('tāl', true)
+    .position(10, showCursor.position()["y"]+showCursor.height+5)
+    .changed(function() {
+      showTheka.checked(showTal.checked());
+    })
+    .parent("sketch-holder");
+  showTheka.attribute("disabled", "true");
+  showTheka.attribute("style", "color:rgba(0, 0, 0, 0.4);");
+  showCursor.attribute("disabled", "true");
+  showCursor.attribute("style", "color:rgba(0, 0, 0, 0.4);");
+  showTal.attribute("disabled", "true");
+  showTal.attribute("style", "color:rgba(0, 0, 0, 0.4);");
   button = createButton("¡Comienza!")
     .size(90, 25)
     .position(width-100, 10)
@@ -119,15 +140,11 @@ function draw() {
   push();
   rotate(-90);
 
-  // noStroke();
-  // alpha = map((angle+90)%360, 0, 360, 0, 255);
-  // mainColor.setAlpha(alpha);
-  // fill(mainColor);
-  // arc(0, 0, radiusBig, radiusBig, -90, angle%360);
-
   if (playing) {
     shade.update();
-    shade.display();
+    if (showCursor.checked()) {
+      shade.display();
+    }
   }
 
   noFill();
@@ -136,15 +153,22 @@ function draw() {
   stroke(mainColor);
   ellipse(0, 0, radiusBig, radiusBig);
   //draw circle per bol
-  for (var i = 0; i < strokeCircles.length; i++) {
-    strokeCircles[i].display();
+  if (showTal.checked()) {
+    for (var i = 0; i < strokeCircles.length; i++) {
+      strokeCircles[i].display();
+    }
+    if (showTheka.checked()) {
+      for (var i = 0; i < icons.length; i++) {
+        icons[i].display();
+      }
+    }
   }
-  for (var i = 0; i < icons.length; i++) {
-    icons[i].display();
-  }
+
   if (playing) {
     cursor.update();
-    cursor.display();
+    if (showCursor.checked()) {
+      cursor.display();
+    }
     strokePlayer(cursor.angle);
   }
   pop();
@@ -219,6 +243,15 @@ function start() {
     }
   }
   slider.value(tempoInit);
+  showTheka.removeAttribute("disabled");
+  showTheka.attribute("style", "color:rgba(0, 0, 0, 0.6);");
+  showTheka.checked("true");
+  showCursor.attribute("disabled", "true");
+  showCursor.attribute("style", "color:rgba(0, 0, 0, 0.4);");
+  showCursor.checked("true");
+  showTal.attribute("disabled", "true");
+  showTal.attribute("style", "color:rgba(0, 0, 0, 0.4);");
+  showTal.checked("true");
   updateTempo();
 }
 
@@ -273,13 +306,15 @@ function StrokeCircle (matra, vibhag, circleType, bol) {
     fill(this.col);
     ellipse(0, 0, this.radius, this.radius);
 
-    textAlign(CENTER, CENTER);
-    noStroke();
-    fill(0);
-    textSize(this.radius * 0.75);
-    textStyle(this.txtStyle);
-    rotate(90);
-    text(this.bol, 0, 0);
+    if (showTheka.checked()) {
+      textAlign(CENTER, CENTER);
+      noStroke();
+      fill(0);
+      textSize(this.radius * 0.75);
+      textStyle(this.txtStyle);
+      rotate(90);
+      text(this.bol, 0, 0);
+    }
     pop();
   }
 
@@ -405,37 +440,45 @@ function playTal() {
     button.html("Para");
     strokeToPlay = 0;
     strokePlayer(0);
+    showCursor.removeAttribute("disabled");
+    showCursor.attribute("style", "color:rgba(0, 0, 0, 0.6);");
+    showTal.removeAttribute("disabled");
+    showTal.attribute("style", "color:rgba(0, 0, 0, 0.6);");
   } else {
     playing = false;
     button.html("¡Comienza!");
+    showCursor.attribute("disabled", "true");
+    showCursor.attribute("style", "color:rgba(0, 0, 0, 0.4);");
+    showTal.attribute("disabled", "true");
+    showTal.attribute("style", "color:rgba(0, 0, 0, 0.4);");
   }
 }
 
 function mouseClicked() {
   if (loaded == false) {
     var init = millis();
-    dha = loadSound("sounds/dha.wav");
+    dha = loadSound("sounds/dha.mp3");
     soundDic["dha"] = dha;
-    dhin = loadSound("sounds/dhin.wav");
+    dhin = loadSound("sounds/dhin.mp3");
     soundDic["dhin"] = dhin;
-    ge = loadSound("sounds/ga.wav");
+    ge = loadSound("sounds/ga.mp3");
     soundDic["ge"] = ge;
-    kat = loadSound("sounds/kat.wav");
+    kat = loadSound("sounds/kat.mp3");
     soundDic["kat"] = kat;
-    ki = loadSound("sounds/ka.wav");
+    ki = loadSound("sounds/ka.mp3");
     soundDic["ki"] = ki;
-    na = loadSound("sounds/na.wav");
+    na = loadSound("sounds/na.mp3");
     soundDic["na"] = na;
-    ra = loadSound("sounds/re.wav");
+    ra = loadSound("sounds/re.mp3");
     soundDic["ra"] = ra;
-    ta = loadSound("sounds/na.wav");
+    ta = loadSound("sounds/na.mp3");
     soundDic["ta"] = ta;
-    ti = loadSound("sounds/te.wav");
+    ti = loadSound("sounds/te.mp3");
     soundDic["te"] = ti;
     soundDic["ti"] = ti;
-    tin = loadSound("sounds/tin.wav");
+    tin = loadSound("sounds/tin.mp3");
     soundDic["tin"] = tin;
-    tun = loadSound("sounds/tun.wav");
+    tun = loadSound("sounds/tun.mp3");
     soundDic["tun"] = tun;
     var end = millis();
     print('Sounds loaded in ' + str(end-init)/1000 + ' seconds.');
