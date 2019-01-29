@@ -1,6 +1,7 @@
 {
-  "tīntāl" : {
-    "name": "तीनताल\ntīntāl",
+  "tintal" : {
+    "name": "तीनताल",
+    "nameTrans": "tīntāl",
     "avart": 16,
     "tempoInit": 100,
     "theka": [
@@ -86,8 +87,9 @@
       }
     ]
   },
-  "ektāl": {
-    "name": "एकताल\nektāl",
+  "ektal": {
+    "name": "एकताल",
+    "nameTrans": "ektāl",
     "avart": 12,
     "tempoInit": 50,
     "theka": [
@@ -193,8 +195,9 @@
       }
     ]
   },
-  "jhaptāl": {
-    "name": "झपताल\njhaptāl",
+  "jhaptal": {
+    "name": "झपताल",
+    "nameTrans": "jhaptāl",
     "avart": 10,
     "tempoInit": 100,
     "theka": [
@@ -250,8 +253,9 @@
       }
     ]
   },
-  "rūpak tāl": {
-    "name": "रूपक ताल\nrūpak tāl",
+  "rupak tal": {
+    "name": "रूपक ताल",
+    "nameTrans": "rūpak tāl",
     "avart": 7,
     "tempoInit": 100,
     "theka": [

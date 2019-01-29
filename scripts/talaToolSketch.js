@@ -1,13 +1,13 @@
 //general variables
 var talInfo;
-var talMenu = ["tīntāl", "ektāl", "jhaptāl", "rūpak tāl"];
+var talMenu; // = ["tīntāl", "ektāl", "jhaptāl", "rūpak tāl"];
 //tal features
 var talName;
 var avart;
 var strokeCircles = []; //list of strokeCircles
 //style
 var radiusBig; //radius of the big circle
-var radius1 = 25; //radius of accented matra
+var radius1 = 27; //radius of accented matra
 var radius2 = 20; //radius of unaccented matra
 var backColor;
 var mainColor;
@@ -52,13 +52,13 @@ var wave;
 var clap;
 var iconSamSize = radius1*1.7;
 var iconSize = radius2*1.7;
-var iconDistance = 0.77;
+var iconDistance = 0.72;
 var icons = [];
 
 function preload () {
   talInfo = loadJSON("files/talInfo.json");
-  wave = loadImage("files/wave.svg");
-  clap = loadImage("files/clap.svg");
+  wave = loadImage("images/wave.svg");
+  clap = loadImage("images/clap.svg");
 }
 
 function setup() {
@@ -73,7 +73,7 @@ function setup() {
   imageMode(CENTER);
   textFont("Laila");
   //style
-  radiusBig = width * (2 / 5);
+  radiusBig = width * (1 / 3);
   backColor = color(185, 239, 162);
   mainColor = color(249, 134, 50);
   matraColor = color(249, 175, 120);
@@ -95,8 +95,9 @@ function setup() {
   noTal[0].setAttribute("disabled", "true");
   noTal[0].setAttribute("hidden", "true");
   noTal[0].setAttribute("style", "display: none");
+  talMenu = Object.keys(talInfo);
   for (var i = 0; i < talMenu.length; i++) {
-    select.option(talMenu[i] + " (" + talInfo[talMenu[i]]["avart"] + ")");
+    select.option(talInfo[talMenu[i]].nameTrans + " (" + talInfo[talMenu[i]].avart + ")", i);
   }
   showTheka = createCheckbox('ṭhekā', true)
     .position(10, height*0.1)
@@ -159,6 +160,9 @@ function draw() {
       strokeCircles[i].display();
     }
     if (showTheka.checked()) {
+      for (var i = 0; i < strokeCircles.length; i++) {
+        strokeCircles[i].displayTheka();
+      }
       for (var i = 0; i < icons.length; i++) {
         icons[i].display();
       }
@@ -205,17 +209,17 @@ function start() {
   }
   playing = false;
 
-  var talSortName = select.value().substring(0, select.value().indexOf("tāl")+"tāl".length);
-  var tal = talInfo[talSortName];
-  talName = tal["name"];
-  avart = tal["avart"];
-  var tempoInit = tal["tempoInit"];
-  var theka = tal["theka"];
+  // var talSortName = select.value().substring(0, select.value().indexOf("tāl")+"tāl".length);
+  var tal = talInfo[talMenu[select.value()]];
+  talName = tal.name + "\n" + tal.name;
+  avart = tal.avart;
+  var tempoInit = tal.tempoInit;
+  var theka = tal.theka;
   for (var i = 0; i < theka.length; i++) {
     var stroke = theka[i];
-    var matra = stroke["matra"];
+    var matra = stroke.matra;
     var vibhag; //tali or khali
-    if (int(stroke["vibhag"]) > 0) {
+    if (int(stroke.vibhag) > 0) {
       vibhag = "tali";
     } else {
       vibhag = "khali";
@@ -223,11 +227,11 @@ function start() {
     var circleType;
     if (i == 0) {
       circleType = "sam";
-      var icon = new CreateIcon(matra, vibhag, iconSamSize);
+      var icon = new CreateIcon(matra, vibhag, radius1*1.2*1.5);
       icons.push(icon);
     } else if ((stroke["vibhag"] % 1) < 0.101) {
       circleType = 1;
-      var icon = new CreateIcon(matra, vibhag, iconSize);
+      var icon = new CreateIcon(matra, vibhag, radius1*1.5);
       icons.push(icon);
     } else if ((stroke["vibhag"] * 10 % 1) == 0) {
       circleType = 2;
@@ -235,7 +239,7 @@ function start() {
       circleType = 3;
     }
     var bol = stroke["bol"];
-    var strokeCircle = new StrokeCircle(matra, vibhag, circleType, bol);
+    var strokeCircle = new CreateStrokeCircle(matra, vibhag, circleType, bol);
     strokeCircles[i] = strokeCircle;
     if (strokeCircle.circleAngle < 0) {
       strokePlayPoints[i] = 360 + strokeCircle.circleAngle;
@@ -256,10 +260,11 @@ function start() {
   updateTempo();
 }
 
-function StrokeCircle (matra, vibhag, circleType, bol) {
+function CreateStrokeCircle (matra, vibhag, circleType, bol) {
   this.bol = bol;
   var increment = 1;
   this.strokeWeight = 2;
+  this.txtW = 0;
 
   if (circleType == "sam") {
     if (vibhag == "tali") {
@@ -274,28 +279,25 @@ function StrokeCircle (matra, vibhag, circleType, bol) {
   }
 
   if (circleType == "sam") {
-    this.radius = radius1*1.2;
+    this.radius = radius1 * 1.2;
     this.txtSize = radius1 * 0.7;
     this.txtStyle = BOLD;
     this.bol = this.bol.toUpperCase();
-    this.volume = 1;
   } else if (circleType == 1) {
     this.radius = radius1;
     this.txtSize = radius1 * 0.75;
     this.txtStyle = BOLD;
-    this.volume = 1;
   } else if (circleType == 2){
     this.radius = radius2;
     this.txtSize = radius2 * 0.75;
-    this.txtStyle = NORMAL;
-    this.volume = 0.7;
+    this.txtStyle = BOLD;
   } else {
     this.radius = radius2;
     this.txtSize = radius2 * 0.75;
     this.col = color(0, 0);
     this.txtStyle = NORMAL;
     this.strokeWeight = 0;
-    this.volume = 0.7;
+    this.txtW = 2;
     increment = 1.05;
   }
 
@@ -310,16 +312,20 @@ function StrokeCircle (matra, vibhag, circleType, bol) {
     strokeWeight(this.strokeWeight);
     fill(this.col);
     ellipse(0, 0, this.radius, this.radius);
+    pop();
+  }
 
-    if (showTheka.checked()) {
-      textAlign(CENTER, CENTER);
-      noStroke();
-      fill(0);
-      textSize(this.txtSize);
-      textStyle(this.txtStyle);
-      rotate(90);
-      text(this.bol, 0, 0);
-    }
+  this.displayTheka = function () {
+    push();
+    translate(this.x, this.y);
+    textAlign(CENTER, CENTER);
+    stroke(backColor);
+    strokeWeight(this.txtW);
+    fill(0);
+    textSize(this.txtSize);
+    textStyle(this.txtStyle);
+    rotate(90);
+    text(this.bol, 0, 0);
     pop();
   }
 
@@ -462,28 +468,28 @@ function playTal() {
 function mouseClicked() {
   if (loaded == false) {
     var init = millis();
-    dha = loadSound("sounds/dha.mp3");
+    dha = loadSound("sounds/tablaStrokes/dha.mp3");
     soundDic["dha"] = dha;
-    dhin = loadSound("sounds/dhin.mp3");
+    dhin = loadSound("sounds/tablaStrokes/dhin.mp3");
     soundDic["dhin"] = dhin;
-    ge = loadSound("sounds/ga.mp3");
+    ge = loadSound("sounds/tablaStrokes/ga.mp3");
     soundDic["ge"] = ge;
-    kat = loadSound("sounds/kat.mp3");
+    kat = loadSound("sounds/tablaStrokes/kat.mp3");
     soundDic["kat"] = kat;
-    ki = loadSound("sounds/ka.mp3");
+    ki = loadSound("sounds/tablaStrokes/ka.mp3");
     soundDic["ki"] = ki;
-    na = loadSound("sounds/na.mp3");
+    na = loadSound("sounds/tablaStrokes/na.mp3");
     soundDic["na"] = na;
-    ra = loadSound("sounds/re.mp3");
+    ra = loadSound("sounds/tablaStrokes/re.mp3");
     soundDic["ra"] = ra;
-    ta = loadSound("sounds/na.mp3");
+    ta = loadSound("sounds/tablaStrokes/na.mp3");
     soundDic["ta"] = ta;
-    ti = loadSound("sounds/te.mp3");
+    ti = loadSound("sounds/tablaStrokes/te.mp3");
     soundDic["te"] = ti;
     soundDic["ti"] = ti;
-    tin = loadSound("sounds/tin.mp3");
+    tin = loadSound("sounds/tablaStrokes/tin.mp3");
     soundDic["tin"] = tin;
-    tun = loadSound("sounds/tun.mp3");
+    tun = loadSound("sounds/tablaStrokes/tun.mp3");
     soundDic["tun"] = tun;
     var end = millis();
     print('Sounds loaded in ' + str(end-init)/1000 + ' seconds.');
